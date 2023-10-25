@@ -1,0 +1,22 @@
+{
+  "name": "auction-service",
+  "version": "1.0.0",
+  "description": "Serverless ",
+  "main": "handler.js",
+  "scripts": {
+    "start": "npm run build && node build/handler.js",
+    "local": "npm run build:live",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dashboard": "serverless",
+    "offline": "serverless offline --noPrependStageInUrl",
+    "deploy": "serverless deploy",
+    "build": "tsc -p ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.125",
+    "serverless-offline": "^13.2.0",
+    "serverless-plugin-typescript": "^2.1.5"
+  }
+}
