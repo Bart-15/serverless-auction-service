@@ -1,18 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config().parsed;
+import dotenv from 'dotenv';
+import path from 'path';
 
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 interface ENV {
   AWS_ACCESS_KEY_ID: string | undefined;
   AWS_SECRET_ACCESS_KEY: string | undefined;
   AWS_REGION: string | undefined;
-  FILE_UPLOAD_BUCKET: string | undefined;
 }
 
 interface Config {
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   AWS_REGION: string;
-  FILE_UPLOAD_BUCKET: string;
 }
 
 export const getConfig = (): ENV => {
@@ -20,7 +19,6 @@ export const getConfig = (): ENV => {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION,
-    FILE_UPLOAD_BUCKET: process.env.FILE_UPLOAD_BUCKET,
   };
 };
 

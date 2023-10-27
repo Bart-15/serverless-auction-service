@@ -1,6 +1,7 @@
 import { object, string, TypeOf } from 'zod';
 
 export const createAuctionSchema = object({
+  id: string().optional(),
   title: string().trim().min(1, { message: 'Name is required.' }),
   status: string()
     .trim()
