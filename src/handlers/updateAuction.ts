@@ -1,4 +1,4 @@
-import { handleError } from '../middleware/errHandler';
+import { handleError, HttpError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
 import validateResource from '../middleware/validateResource';
 import { createAuctionInput, createAuctionSchema } from '../schema/auction.schema';
@@ -11,14 +11,9 @@ export const handler: ProxyHandler = async event => {
 
     const auction = await getAuctionById(id);
 
-    if (!auction)
-      return {
-        statusCode: 404,
-        headers,
-        body: JSON.stringify({
-          message: 'Auction not found',
-        }),
-      };
+    if (!auction) {
+      throw new HttpError(404, { errorMessage: 'Auction not found' });
+    }
 
     const reqBody = JSON.parse(event.body as string) as createAuctionInput;
 

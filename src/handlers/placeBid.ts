@@ -1,7 +1,5 @@
-import { handleError } from '../middleware/errHandler';
+import { handleError, HttpError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
-import validateResource from '../middleware/validateResource';
-import { createAuctionInput, createAuctionSchema } from '../schema/auction.schema';
 import { getAuctionById, updateAuction } from '../services/auction.service';
 import { ProxyHandler } from '../types/handler.types';
 
@@ -11,35 +9,22 @@ export const handler: ProxyHandler = async event => {
     const { amount } = JSON.parse(event.body as string);
 
     if (!amount) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          amount: 'Amount is required',
-        }),
-      };
+      throw new HttpError(400, { errorMessage: 'Amount is required' });
     }
 
     const auction = await getAuctionById(id);
 
-    if (amount <= auction?.highestBid.amount) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({
-          amount: `Your bid is must be higher than ${amount}`,
-        }),
-      };
+    if (!auction) {
+      throw new HttpError(404, { errorMessage: `Auction not found` });
     }
 
-    if (!auction)
-      return {
-        statusCode: 404,
-        headers,
-        body: JSON.stringify({
-          message: 'Auction not found',
-        }),
-      };
+    if (auction?.status === 'CLOSED') {
+      throw new HttpError(403, { errorMessage: 'You cannot bid on closed auctions' });
+    }
+
+    if (amount <= auction?.highestBid.amount) {
+      throw new HttpError(400, { errorMessage: `Your bid is must be higher than ${amount}` });
+    }
 
     const updatedAuction = {
       highestBid: {

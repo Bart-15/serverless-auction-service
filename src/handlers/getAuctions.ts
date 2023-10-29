@@ -1,11 +1,21 @@
+import validator from '@middy/validator';
+import { transpileSchema } from '@middy/validator/transpile';
+
+import commonMiddleware from '../lib/commonMiddleware';
+import getAuctionsSchema from '../lib/schemas/getAuctionsSchema';
 import { handleError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
 import { index } from '../services/auction.service';
 import { ProxyHandler } from '../types/handler.types';
 
-export const handler: ProxyHandler = async () => {
+const getAuctions: ProxyHandler = async event => {
   try {
-    const auctions = await index();
+    const { status } = event.queryStringParameters!;
+
+    const query = {
+      status: status,
+    };
+    const auctions = await index(query);
 
     return {
       statusCode: 201,
@@ -18,3 +28,7 @@ export const handler: ProxyHandler = async () => {
     return handleError(error);
   }
 };
+
+export const handler = commonMiddleware(getAuctions).use(
+  validator({ eventSchema: transpileSchema(getAuctionsSchema) })
+);
