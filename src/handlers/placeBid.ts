@@ -1,12 +1,16 @@
+import commonMiddleware from '../lib/commonMiddleware';
 import { handleError, HttpError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
 import { getAuctionById, updateAuction } from '../services/auction.service';
 import { ProxyHandler } from '../types/handler.types';
 
-export const handler: ProxyHandler = async event => {
+type TAmt = {
+  amount: number;
+};
+const placeBid: ProxyHandler = async event => {
   try {
     const id = event.pathParameters?.id as string;
-    const { amount } = JSON.parse(event.body as string);
+    const { amount } = event.body as unknown as TAmt;
 
     if (!amount) {
       throw new HttpError(400, { errorMessage: 'Amount is required' });
@@ -23,7 +27,9 @@ export const handler: ProxyHandler = async event => {
     }
 
     if (amount <= auction?.highestBid.amount) {
-      throw new HttpError(400, { errorMessage: `Your bid is must be higher than ${amount}` });
+      throw new HttpError(400, {
+        errorMessage: `Your bid is must be higher than ${auction?.highestBid.amount}`,
+      });
     }
 
     const updatedAuction = {
@@ -46,3 +52,5 @@ export const handler: ProxyHandler = async event => {
     return handleError(error);
   }
 };
+
+export const handler = commonMiddleware(placeBid);

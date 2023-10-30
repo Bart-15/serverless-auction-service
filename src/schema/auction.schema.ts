@@ -13,8 +13,8 @@ export const createAuctionSchema = object({
   highestBid: object({
     amount: number().positive(),
   }),
-  createdAt: string().trim().min(1, { message: 'Date is required.' }),
-  endingAt: string().trim().min(1, { message: 'Date is required.' }),
+  createdAt: string().trim().min(1, { message: 'CreatedAt is required.' }),
+  endingAt: string().trim().min(1, { message: 'EndingAt is required.' }),
 });
 
 export type createAuctionInput = TypeOf<typeof createAuctionSchema>;

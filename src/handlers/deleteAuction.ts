@@ -1,9 +1,10 @@
+import commonMiddleware from '../lib/commonMiddleware';
 import { handleError, HttpError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
 import { destroyAuction, getAuctionById } from '../services/auction.service';
 import { ProxyHandler } from '../types/handler.types';
 
-export const handler: ProxyHandler = async events => {
+const deleteAuction: ProxyHandler = async events => {
   try {
     const id = events.pathParameters?.id as string;
     const auction = await getAuctionById(id);
@@ -26,3 +27,5 @@ export const handler: ProxyHandler = async events => {
     return handleError(error);
   }
 };
+
+export const handler = commonMiddleware(deleteAuction);

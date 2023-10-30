@@ -1,3 +1,4 @@
+import commonMiddleware from '../lib/commonMiddleware';
 import { handleError, HttpError } from '../middleware/errHandler';
 import { headers } from '../middleware/headers';
 import validateResource from '../middleware/validateResource';
@@ -5,7 +6,7 @@ import { createAuctionInput, createAuctionSchema } from '../schema/auction.schem
 import { getAuctionById, updateAuction } from '../services/auction.service';
 import { ProxyHandler } from '../types/handler.types';
 
-export const handler: ProxyHandler = async event => {
+const update: ProxyHandler = async event => {
   try {
     const id = event.pathParameters?.id as string;
 
@@ -15,7 +16,11 @@ export const handler: ProxyHandler = async event => {
       throw new HttpError(404, { errorMessage: 'Auction not found' });
     }
 
-    const reqBody = JSON.parse(event.body as string) as createAuctionInput;
+    if (auction?.status === 'CLOSED') {
+      throw new HttpError(403, { errorMessage: 'You cannot update on closed auction' });
+    }
+
+    const reqBody = event.body as unknown as createAuctionInput;
 
     const newAuction = {
       title: reqBody.title,
@@ -24,6 +29,7 @@ export const handler: ProxyHandler = async event => {
       highestBid: {
         amount: auction.highestBid.amount,
       },
+      endingAt: reqBody.endingAt,
     };
 
     validateResource(createAuctionSchema, newAuction);
@@ -45,3 +51,5 @@ export const handler: ProxyHandler = async event => {
     return handleError(error);
   }
 };
+
+export const handler = commonMiddleware(update);
