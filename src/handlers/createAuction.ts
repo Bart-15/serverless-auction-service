@@ -1,4 +1,5 @@
-import validator from '@middy/validator';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { v4 as uuidv4 } from 'uuid';
 
 import commonMiddleware from '../lib/commonMiddleware';
@@ -7,17 +8,23 @@ import { headers } from '../middleware/headers';
 import validateResource from '../middleware/validateResource';
 import { createAuctionInput, createAuctionSchema } from '../schema/auction.schema';
 import { addAuction } from '../services/auction.service';
-import { ProxyHandler } from '../types/handler.types';
 
-const createAuctions: ProxyHandler = async event => {
+const createAuctions = async (
+  event: APIGatewayProxyEventV2 & { requestContext: { authorizer: any } }
+) => {
   try {
     const body = event.body as unknown as createAuctionInput;
 
+    const { email } = event.requestContext.authorizer;
+
+    // eslint-disable-next-line no-console
+    console.log(event.requestContext);
     const endDate = new Date();
     endDate.setHours(new Date().getHours() + 1);
 
     const newAuction = {
       id: uuidv4(),
+      seller: email,
       title: body?.title,
       status: 'OPEN',
       createdAt: new Date().toISOString(),
