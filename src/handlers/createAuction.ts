@@ -17,8 +17,6 @@ const createAuctions = async (
 
     const { email } = event.requestContext.authorizer;
 
-    // eslint-disable-next-line no-console
-    console.log(event.requestContext);
     const endDate = new Date();
     endDate.setHours(new Date().getHours() + 1);
 
@@ -26,11 +24,12 @@ const createAuctions = async (
       id: uuidv4(),
       seller: email,
       title: body?.title,
+      image: body?.image,
       status: 'OPEN',
       createdAt: new Date().toISOString(),
       endingAt: endDate.toISOString(),
       highestBid: {
-        amount: body?.highestBid.amount,
+        amount: 0,
       },
     };
 

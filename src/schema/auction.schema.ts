@@ -3,6 +3,7 @@ import { number, object, string, TypeOf } from 'zod';
 export const createAuctionSchema = object({
   id: string().optional(),
   title: string().trim().min(1, { message: 'Title is required.' }),
+  image: string().min(1, { message: 'Image is required.' }),
   seller: string()
     .min(1, { message: 'Email is required.' })
     .email('Please input valid email address'),
@@ -14,8 +15,8 @@ export const createAuctionSchema = object({
       val => ({ message: `${val} is invalid. Only accepts OPEN and CLOSED.` })
     ),
   highestBid: object({
-    amount: number().positive(),
-    bidder: string().optional(),
+    amount: number(),
+    bidder: string().email('Invalid bidder format').optional(),
   }),
   createdAt: string().trim().min(1, { message: 'CreatedAt is required.' }),
   endingAt: string().trim().min(1, { message: 'EndingAt is required.' }),
