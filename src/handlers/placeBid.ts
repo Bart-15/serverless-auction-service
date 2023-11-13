@@ -64,7 +64,7 @@ const placeBid = async (
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Auction updated successfully',
+        message: 'Bid Successful',
         auction: results.Attributes,
       }),
     };

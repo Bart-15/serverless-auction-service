@@ -1,6 +1,7 @@
 import { z } from 'zod';
 export class HttpError extends Error {
   constructor(
+    // eslint-disable-next-line no-unused-vars
     public statusCode: number,
     body: Record<string, unknown> = {}
   ) {
